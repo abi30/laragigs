@@ -16,5 +16,6 @@
 @yield('content')
     </div>
 
+    {{-- hello --}}
 </body>
 </html>
