@@ -16,6 +16,9 @@
 @yield('content')
     </div>
 
+    <h1>
+        hello bangladeh
+    </h1>
     {{-- hello --}}
 </body>
 </html>
