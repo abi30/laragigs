@@ -59,12 +59,7 @@ class ListingController extends Controller
         return redirect('/');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    
     public function show(Listing $listing)
     {
         return view('listings.show', [
