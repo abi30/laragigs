@@ -55,6 +55,7 @@ class ListingController extends Controller
             "logo" =>  'nullable',
             "description" => 'required'
         ]);
+        // waiting for the next 
         return redirect('/');
     }
 
