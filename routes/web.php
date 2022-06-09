@@ -1,10 +1,11 @@
 <?php
 
+use App\Http\Controllers\ListingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\Listing;
 use App\Models\User;
-
+use PhpParser\Node\Expr\List_;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,18 +18,14 @@ use App\Models\User;
 |
 */
 
-Route::get('/', function () {
-    return view('listings', [
-     
-        'listings' => Listing::all()
-    ]);
-});
-Route::get('/layout', function () {
-    return view('layout');
-});
-Route::get('/listings/{listing}', function (Listing $listing) {
-
-    return view('listing', [
-        'listing' => $listing
-    ]);
-});
+// Route::get('/layout', function () {
+//     return view('layout');
+// });
+// All listings
+Route::get('/', [ListingController::class, 'index']);
+// create a new listing
+Route::get('/listings/create', [ListingController::class, 'create']);
+// storage a new listing in database
+Route::post('/listings', [ListingController::class, 'store']);
+// show a new listing
+Route::get('/listings/{listing}', [ListingController::class, 'show']);
