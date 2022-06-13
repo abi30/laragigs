@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Whoops\Run;
+// use Whoops\Run;
+// use Clockwork\Request\Log;
+// use Facade\FlareClient\View;
+// use Illuminate\Support\Facades\Redis;
+// use phpDocumentor\Reflection\PseudoTypes\List_ as PseudoTypesList_;
+// use PhpParser\Node\Expr\List_;
+
 use App\Models\Listing;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\Redis;
 
 class ListingController extends Controller
 {
@@ -17,12 +22,15 @@ class ListingController extends Controller
      */
     public function index()
     {
+        // dd(Listing::latest()->filter(request(['tag', 'search']))->paginate(2));
         //(Request $request) or (request())
         //dd(request()->tag) or request('tag')
         return view('listings.index', [
             // all()  and latest()->get() are same 
             // 'listings' => Listing::all()
-            'listings' => Listing::latest()->filter(request(['tag', 'search']))->get()
+            // 'listings' => Listing::latest()->filter(request(['tag', 'search']))->get()
+            // 'listings' => Listing::latest()->filter(request(['tag', 'search']))->simplePaginate(2)
+            'listings' => Listing::latest()->filter(request(['tag', 'search']))->paginate(4)
 
         ]);
     }
@@ -45,21 +53,30 @@ class ListingController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request->file('logo')->store());
         $formField = $request->validate([
             "title" => 'required',
             "company" => ['required', Rule::unique('listings', 'company')],
             "location" => 'required',
             "email" => ['required', 'email'],
-            "website" => 'required',
+            "website" => 'required|url',
             "tags" => 'required',
-            "logo" =>  'nullable',
+            // "logo" =>  'required|nullable',
+            // "logo" =>  'required',
+            // "logo" =>  'nullable',
             "description" => 'required'
         ]);
+
+        if ($request->hasFile('logo')) {
+            $formField['logo'] = $request->file('logo')->store('logos', 'public');
+        }
+
+        Listing::create($formField);
         // waiting for the next 
-        return redirect('/');
+        return redirect('/')->with('message', 'Listing created successfully!.');
     }
 
-    
+
     public function show(Listing $listing)
     {
         return view('listings.show', [
@@ -73,9 +90,11 @@ class ListingController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Listing $listing)
     {
-        //
+        // dd($listing->title);
+        // return View('listing.edit', compact('listing'));
+        return View('listings.edit', ['listing' => $listing]);
     }
 
     /**
@@ -85,9 +104,27 @@ class ListingController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Listing $listing)
     {
-        //
+
+        $formField = $request->validate([
+            "title" => 'required',
+            "company" => ['required'],
+            "location" => 'required',
+            "email" => ['required', 'email'],
+            "website" => 'required|url',
+            "tags" => 'required',
+            "description" => 'required'
+        ]);
+
+        if ($request->hasFile('logo')) {
+            $formField['logo'] = $request->file('logo')->store('logos', 'public');
+        }
+
+        $listing->update($formField);
+        // waiting for the next 
+        // return redirect('/')->with('message', 'Listing created successfully!.');
+        return back()->with('message', 'Listing updated successfully!.');
     }
 
     /**
@@ -96,8 +133,9 @@ class ListingController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Listing $listing)
     {
-        //
+        $listing->delete();
+        return redirect('/')->with('message', 'Listing deleted successfully!.');
     }
 }

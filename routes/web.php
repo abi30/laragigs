@@ -27,5 +27,12 @@ Route::get('/', [ListingController::class, 'index']);
 Route::get('/listings/create', [ListingController::class, 'create']);
 // storage a new listing in database
 Route::post('/listings', [ListingController::class, 'store']);
+// show edit form with existing data
+Route::get('/listings/{listing}/edit', [ListingController::class, 'edit']);
+// update an existing listing in database
+Route::put('/listings/{listing}', [ListingController::class, 'update']);
+
+// delete an existing listing data from database
+Route::delete('/listings/{listing}', [ListingController::class, 'destroy']);
 // show a new listing
 Route::get('/listings/{listing}', [ListingController::class, 'show']);
