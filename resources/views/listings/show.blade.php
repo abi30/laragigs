@@ -38,7 +38,8 @@
         </div>
     </x-card>
     <x-card class="mt-4 p-2 flex space-x-6">
-        <a href="/listings/{{$listing->id}}/edit">
+        {{-- @auth --}}
+            {{-- <a href="/listings/{{$listing->id}}/edit">
             <i class="fa-solid fa-pencil"></i> Edit Post</a>
 
             <form action="/listings/{{$listing->id}}" method="POST">
@@ -46,7 +47,9 @@
             @method('DELETE')
             <button class="text-danger" type="submit"><i class="fa-solid fa-trash"></i> Delete</button>
             
-            </form>
+            </form> --}}
+        {{-- @endauth --}}
+      
     </x-card>
     </div>
 </x-layout>

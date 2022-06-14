@@ -42,7 +42,6 @@
                 class="logo" /></a>
         <ul class="flex space-x-6 mr-6 text-lg">
             @auth
-
                 <li>
                     <span class="font-bold uppercase">
                         Wellcome {{auth()->user()->name}}

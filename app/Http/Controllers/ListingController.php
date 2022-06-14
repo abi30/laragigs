@@ -10,6 +10,7 @@ namespace App\Http\Controllers;
 // use PhpParser\Node\Expr\List_;
 
 use App\Models\Listing;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -61,15 +62,14 @@ class ListingController extends Controller
             "email" => ['required', 'email'],
             "website" => 'required|url',
             "tags" => 'required',
-            // "logo" =>  'required|nullable',
-            // "logo" =>  'required',
-            // "logo" =>  'nullable',
             "description" => 'required'
         ]);
 
         if ($request->hasFile('logo')) {
             $formField['logo'] = $request->file('logo')->store('logos', 'public');
         }
+
+        $formField['user_id'] = auth()->id();
 
         Listing::create($formField);
         // waiting for the next 
@@ -107,6 +107,10 @@ class ListingController extends Controller
     public function update(Request $request, Listing $listing)
     {
 
+        //  Make sure logged in user is owner
+        if ($listing->user_id != auth()->id()) {
+            abort(403, 'Unauthorized Action');
+        }
         $formField = $request->validate([
             "title" => 'required',
             "company" => ['required'],
@@ -123,8 +127,8 @@ class ListingController extends Controller
 
         $listing->update($formField);
         // waiting for the next 
-        // return redirect('/')->with('message', 'Listing created successfully!.');
-        return back()->with('message', 'Listing updated successfully!.');
+        return redirect('/')->with('message', 'Listing created successfully!.');
+        // return back()->with('message', 'Listing updated successfully!.');
     }
 
     /**
@@ -135,7 +139,18 @@ class ListingController extends Controller
      */
     public function destroy(Listing $listing)
     {
+        if ($listing->user_id != auth()->id()) {
+            abort(403, 'Unauthorized Action');
+        }
         $listing->delete();
-        return redirect('/')->with('message', 'Listing deleted successfully!.');
+        // return redirect('/')->with('message', 'Listing deleted successfully!.');
+        return back()->with('message', 'Listing deleted successfully!.');
+    }
+
+    public function manage()
+    {
+
+        // dd(auth()->user()->listings()->get());
+        return view('listings.manage', ['listings' => auth()->user()->listings()->get()]);
     }
 }

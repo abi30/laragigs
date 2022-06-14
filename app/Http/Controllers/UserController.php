@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Facade\FlareClient\View;
+use Illuminate\Contracts\View\View as ViewView;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -18,6 +19,29 @@ class UserController extends Controller
     public function index()
     {
         //
+    }
+    public function login()
+    {
+        return view('users.login');
+    }
+
+    public function authenticate(Request $request)
+    {
+        $formFields = $request->validate([
+
+            "email" => ['required', 'email'],
+            "password" => 'required',
+
+        ]);
+
+
+        if (auth()->attempt($formFields)) {
+
+            $request->session()->regenerate();
+            return redirect('/')->with('message', 'your are now logged in successfully!.');
+        }
+
+        return back()->withErrors(["email" => "Invalid credentials"])->onlyInput('email');
     }
 
     /**
@@ -101,5 +125,12 @@ class UserController extends Controller
     public function destroy($id)
     {
         //
+    }
+    public function logout(Request $request)
+    {
+        auth()->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('/')->with('message', 'Logged out successfully!.');
     }
 }
